@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: notifications
+  name: mqtt
+  labels:
+    app: mqtt
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mqtt
+  template:
+    metadata:
+      labels:
+        app: mqtt
+    spec:
+      containers:
+        - name: mqtt
+          image: eclipse-mosquitto
+          resources:
+            requests:
+              memory: "50Mi"
+              cpu: "0.1"
+          ports:
+          - containerPort: 1883
+          # volumeMounts:
+            # A configmap for the mosquitto.conf file
+            # - name: mosquitto-conf
+            #   mountPath: /mosquitto/conf/mosquitto.conf
+            #   subPath: mosquitto.conf
+            # A configmap for the mosquitto passwd file
+            # - name: mosquitto-passwd
+            #   mountPath: /mosquitto/conf/passwd
+            #   subPath: passwd
+      # volumes:
+      #   - name: mosquitto-conf
+      #     configMap:
+      #       name: mosquitto.conf
+        # - name: mosquitto-passwd
+        #   configMap:
+        #     name: passwd
