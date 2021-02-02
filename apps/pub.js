@@ -2,6 +2,10 @@ const MQTT = require("async-mqtt");
 
 run()
 
+let brokerHost = process.env("BROKER");
+let tcpPort = process.env("TCPPORT");
+let topic = process.env("TOPIC");
+
 async function run() {
     const client = await MQTT.connectAsync("tcp://158.175.84.118:32000")
 
