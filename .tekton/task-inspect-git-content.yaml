@@ -1,0 +1,63 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: inspect-git-content
+spec:
+  params:
+    - name: pipeline-debug
+      default: "0"      
+    - name: trigger-name
+      default: "0"            
+  workspaces:
+    - name: workspace
+      mountPath: /artifacts
+  stepTemplate:
+    env:
+      - name: PIPELINE_DEBUG
+        value: $(params.pipeline-debug)      
+  steps:
+    - name: inspect-git-content
+      image: ibmcom/pipeline-base-image:2.6
+      env:
+        - name: TRIGGER_NAME
+          value: $(params.trigger-name)
+        - name: PIPELINE_ID
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.annotations['devops.cloud.ibm.com/pipeline-id']
+        - name: PIPELINE_RUN_URL
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.annotations['devops.cloud.ibm.com/pipeline-run-url']              
+        - name: PIPELINE_RUN_ID
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.annotations['devops.cloud.ibm.com/tekton-pipeline']   
+        - name: WORKSPACE
+          value: $(workspaces.workspace.path)                      
+      workingDir: /artifacts
+      command: ["/bin/bash", "-c"]
+      args:
+        - |
+          # write to the file
+          echo "*Pipline URL*" >> $WORKSPACE/result
+          echo ${PIPELINE_RUN_URL} >> $WORKSPACE/result
+          echo "" >>  $WORKSPACE/result
+          echo "Hello" >> $WORKSPACE/result
+          echo "" >> $WORKSPACE/result   
+          cat $WORKSPACE/result  
+      volumeMounts:
+        - mountPath: /steps
+          name: steps-volume
+        - mountPath: /cd-config
+          name: cd-config-volume
+  volumes:
+    - name: steps-volume
+      emptyDir: {}
+    - name: cd-config-volume
+      configMap:
+        name: toolchain
+        items:
+          - key: toolchain.json
+            path: toolchain.json          

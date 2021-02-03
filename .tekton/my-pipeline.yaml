@@ -1,0 +1,50 @@
+# Main Pipeline for building and testing
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: my-pipeline
+spec:
+  params:
+    - name: pipeline-debug
+      default: "0"
+    - name: broker-hostname
+      description: MQTT broker 
+    - name: topic
+      description: Full topic name  
+    - name: trigger-name
+  workspaces:
+    - name: code
+  tasksTemplates:
+    env:
+
+  tasks:
+    # ---------------------------------------------------------------------------------
+    # Build the infrastructure required
+    - name: pipeline-git-event-content-inspect
+      taskRef:
+        name: inspect-git-content
+      workspaces:
+        - name: workspace
+          workspace: code
+      params:
+        - name: trigger-name
+          value: $(params.trigger-name)
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
+    - name: publish-details
+      runAfter:
+        - pipeline-git-event-content-inspect
+      taskRef:
+        name: mqtt-publish
+      workspaces:
+        - name: workspace
+          workspace: code
+      params:
+        - name: broker-hostname
+          value: $(params.broker-hostname)
+        - name: topic
+          value: $(params.topic)          
+        - name: payload-file
+          value: $(workspaces.workspace.path)/result
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)          

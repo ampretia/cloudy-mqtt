@@ -13,15 +13,17 @@ if (fs.existsSync(payloadFile)){
     payload = fs.readFileSync(payloadFile)
     run();
 } else {
-    console.log("Failed to read file")
+    console.log(`Failed to read file ${payloadFile}`);
     process.exit(1);
 }
 
 async function run() {
+    console.log(`Connecting to ${host}`);
     const client = await MQTT.connectAsync(host)
 
-    console.log("Starting");
+   
     try {
+        console.log(`Publishing payload to topic ${topic}`);
         await client.publish(topic, payload);
         // This line doesn't run until the server responds to the publish
         await client.end();

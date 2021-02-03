@@ -7,11 +7,7 @@ spec:
   params:
     - name: broker-hostname
       description: |
-        hostname of the broker
-    - name: broker-port
-      description: |
-         Port to use for the TCP connection
-      default: "1883"
+        hostname of the broker with port
     - name: topic
       description: topic to publish on
       default: text
@@ -32,42 +28,52 @@ spec:
   steps:
     - name: post-to-slack
       # tbd: use an image with curl and jq?
-      image: ibmcom/pipeline-base-image:2.6
+      image: ampretia/tekton-mqtt:latest
       env:
         # keep slack message injected in an env var to let YAML manage the quote for us
-        - name: SLACK_MESSAGE
-          value: $(params.message)
-        - name: PIPELINE_RUN_NAME
-          valueFrom:
-            fieldRef:
-              fieldPath: metadata.labels['tekton.dev/pipelineRun']
-        - name: PIPELINE_RUN_ID
-          valueFrom:
-            fieldRef:
-              fieldPath: metadata.annotations['devops.cloud.ibm.com/tekton-pipeline']
-        - name: PIPELINE_RUN_URL
-          valueFrom:
-            fieldRef:
-              fieldPath: metadata.annotations['devops.cloud.ibm.com/pipeline-run-url']
-        - name: BUILD_NUMBER
-          valueFrom:
-            fieldRef:
-              fieldPath: metadata.annotations['devops.cloud.ibm.com/build-number']
-        - name: PIPELINE_ID
-          valueFrom:
-            fieldRef:
-              fieldPath: metadata.annotations['devops.cloud.ibm.com/pipeline-id']
-        - name: TRIGGER_TYPE
-          valueFrom:
-            fieldRef:
-              fieldPath: metadata.annotations['devops.cloud.ibm.com/trigger-type']
-        - name: TRIGGER_NAME
-          valueFrom:
-            fieldRef:
-              fieldPath: metadata.annotations['devops.cloud.ibm.com/trigger-name']
-        - name: TRIGGERED_BY
-          valueFrom:
-            fieldRef:
-              fieldPath: metadata.annotations['devops.cloud.ibm.com/triggered-by']
-      script: |
-        #!/usr/bin/env node
+        - name: BROKER
+          value: $(params.broker-hostname)
+        - name: TOPIC
+          value: $(params.topic)
+        - name: PAYLOAD
+          value: $(params.payload-file)
+      command: ["node", "index.js"]
+      workingDir: /usr/src/app
+ 
+ 
+ 
+ 
+ 
+         # - name: PIPELINE_RUN_NAME
+        #   valueFrom:
+        #     fieldRef:
+        #       fieldPath: metadata.labels['tekton.dev/pipelineRun']
+        # - name: PIPELINE_RUN_ID
+        #   valueFrom:
+        #     fieldRef:
+        #       fieldPath: metadata.annotations['devops.cloud.ibm.com/tekton-pipeline']
+        # - name: PIPELINE_RUN_URL
+        #   valueFrom:
+        #     fieldRef:
+        #       fieldPath: metadata.annotations['devops.cloud.ibm.com/pipeline-run-url']
+        # - name: BUILD_NUMBER
+        #   valueFrom:
+        #     fieldRef:
+        #       fieldPath: metadata.annotations['devops.cloud.ibm.com/build-number']
+        # - name: PIPELINE_ID
+        #   valueFrom:
+        #     fieldRef:
+        #       fieldPath: metadata.annotations['devops.cloud.ibm.com/pipeline-id']
+        # - name: TRIGGER_TYPE
+        #   valueFrom:
+        #     fieldRef:
+        #       fieldPath: metadata.annotations['devops.cloud.ibm.com/trigger-type']
+        # - name: TRIGGER_NAME
+        #   valueFrom:
+        #     fieldRef:
+        #       fieldPath: metadata.annotations['devops.cloud.ibm.com/trigger-name']
+        # - name: TRIGGERED_BY
+        #   valueFrom:
+        #     fieldRef:
+        #       fieldPath: metadata.annotations['devops.cloud.ibm.com/triggered-by']
+
