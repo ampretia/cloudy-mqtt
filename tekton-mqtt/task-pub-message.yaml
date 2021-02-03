@@ -2,47 +2,29 @@
 apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
-  name: slack-post-message
+  name: mqtt-publish
 spec:
   params:
-    - name: domain
+    - name: broker-hostname
       description: |
-        the Slack domain to send the message to.
-        If not set, the message will be posted to the Slack integration(s) as defined in the Toolchain.
-      default: ""
-    - name: channel
+        hostname of the broker
+    - name: broker-port
       description: |
-        the Slack channel to send the message to.
-        When set, overrides the default channel as set in the Slack Webhook URL.
-        Only non-private channel can override the default channel.
-        If the target channel is a private channel, the Slack Webhook URL in the Slack toolchain 
-        integration card needs to be updated.
-      default: ""
-    - name: message-format
-      description: the format of the message. text(default) or JSON payload.
+         Port to use for the TCP connection
+      default: "1883"
+    - name: topic
+      description: topic to publish on
       default: text
-    - name: message-script
-      description: Shell script that provides messsage content.
-      default: ""
-    - name: message
-      description: the message to send to Slack
-      default: |
-        Tekton Pipeline completed successfully. :heavy_check_mark:
-        Visit *<https://api.slack.com/reference/surfaces/formatting|More on Slack message formatting.>*
-    - name: exit-on-error
-      description: |
-        flag (`true` | `false`) to indicate if the task should fail or continue
-        if unable to process the message or post to Slack.
-      default: "false"
+    - name: payload-file
+      description: Name of the file to read that contains the payload
     - name: pipeline-debug
       description: Pipeline debug mode
       default: "0"
   workspaces:
     - name: workspace
       description: |
-        A workspace that contain data useful for the script/slack message resolution.
-        Should be marked as optional when Tekton will permit it
-      mountPath: /artifacts
+        A workspace that contain payload-file
+      mountPath: /data
   stepTemplate:
     env:
       - name: PIPELINE_DEBUG
@@ -89,4 +71,3 @@ spec:
               fieldPath: metadata.annotations['devops.cloud.ibm.com/triggered-by']
       script: |
         #!/usr/bin/env node
-        
