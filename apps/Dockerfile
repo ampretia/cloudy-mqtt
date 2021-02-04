@@ -4,7 +4,7 @@ WORKDIR /usr/src/app
 COPY package*.json ./
 
 RUN npm install 
-COPY index.js .
+COPY pub.js .
 
 USER node
-CMD ["node","index.js"]
+CMD ["node","pub.js"]

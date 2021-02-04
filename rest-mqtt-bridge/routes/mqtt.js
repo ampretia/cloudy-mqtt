@@ -1,10 +1,11 @@
 var express = require('express');
 var router = express.Router();
+const env = require('env-var');
 
 const MQTT = require("async-mqtt");
  
 
-let mqttBroker = process.env.MQTTBROKER;
+let mqttBroker = env.get("BROKER").required().asUrlString();
 
 const client = MQTT.connect(mqttBroker);
 

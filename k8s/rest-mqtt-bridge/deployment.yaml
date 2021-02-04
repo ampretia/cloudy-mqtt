@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: notifications
+  name: rest-mqtt-bridge
+  labels:
+    app:  rest-mqtt-bridge
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app:  rest-mqtt-bridge
+  template:
+    metadata:
+      labels:
+        app:  rest-mqtt-bridge
+    spec:
+      containers:
+        - name:  rest-mqtt-bridge
+          image: ampretia/rest-mqtt-bridge
+          resources:
+            requests:
+              memory: "50Mi"
+              cpu: "0.1"
+          envFrom:
+            - configMapRef:
+                name: rest-mqtt.conf              
+          ports:
+          - containerPort: 3000

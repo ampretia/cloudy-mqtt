@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: rest-mqtt.conf
+  namespace: notifications
+  labels:
+    app:  rest-mqtt-bridge  
+data:
+  BROKER: tcp://158.175.84.118:32000

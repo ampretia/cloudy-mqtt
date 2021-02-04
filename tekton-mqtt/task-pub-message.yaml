@@ -7,12 +7,15 @@ spec:
   params:
     - name: broker-hostname
       description: |
-        hostname of the broker with port
+        Hostname of the broker with port, eg tcp://123.41.123.4:1883
     - name: topic
       description: topic to publish on
-      default: text
+      default: "/build"
     - name: payload-file
       description: Name of the file to read that contains the payload
+    - name: retained-pub
+      description: Should the publish message be marked as retained?
+      default: true
     - name: pipeline-debug
       description: Pipeline debug mode
       default: "0"
@@ -27,8 +30,7 @@ spec:
         value: $(params.pipeline-debug)
   steps:
     - name: post-to-slack
-      # tbd: use an image with curl and jq?
-      image: ampretia/tekton-mqtt:latest
+      image: ampretia/tekton-mqtt:1.0
       env:
         # keep slack message injected in an env var to let YAML manage the quote for us
         - name: BROKER
@@ -37,43 +39,7 @@ spec:
           value: $(params.topic)
         - name: PAYLOAD
           value: $(params.payload-file)
+        - name: RETAINED
+          value: $(params.retained-pub)
       command: ["node", "index.js"]
       workingDir: /usr/src/app
- 
- 
- 
- 
- 
-         # - name: PIPELINE_RUN_NAME
-        #   valueFrom:
-        #     fieldRef:
-        #       fieldPath: metadata.labels['tekton.dev/pipelineRun']
-        # - name: PIPELINE_RUN_ID
-        #   valueFrom:
-        #     fieldRef:
-        #       fieldPath: metadata.annotations['devops.cloud.ibm.com/tekton-pipeline']
-        # - name: PIPELINE_RUN_URL
-        #   valueFrom:
-        #     fieldRef:
-        #       fieldPath: metadata.annotations['devops.cloud.ibm.com/pipeline-run-url']
-        # - name: BUILD_NUMBER
-        #   valueFrom:
-        #     fieldRef:
-        #       fieldPath: metadata.annotations['devops.cloud.ibm.com/build-number']
-        # - name: PIPELINE_ID
-        #   valueFrom:
-        #     fieldRef:
-        #       fieldPath: metadata.annotations['devops.cloud.ibm.com/pipeline-id']
-        # - name: TRIGGER_TYPE
-        #   valueFrom:
-        #     fieldRef:
-        #       fieldPath: metadata.annotations['devops.cloud.ibm.com/trigger-type']
-        # - name: TRIGGER_NAME
-        #   valueFrom:
-        #     fieldRef:
-        #       fieldPath: metadata.annotations['devops.cloud.ibm.com/trigger-name']
-        # - name: TRIGGERED_BY
-        #   valueFrom:
-        #     fieldRef:
-        #       fieldPath: metadata.annotations['devops.cloud.ibm.com/triggered-by']
-

@@ -1,15 +1,21 @@
 const MQTT = require("async-mqtt");
+const env = require('env-var');
+
+let host = env.get("BROKER").required().asUrlString();
+let topic = env.get("TOPIC").required().asString();
 
 run()
 
 async function run() {
-    const client = await MQTT.connectAsync("tcp://158.175.84.118:32000")
+    console.log(`Connecting to ${host}`);
+    const client = await MQTT.connectAsync(host)
 
     console.log("Starting");
     try {
-        await client.subscribe("wow/so/cool", "It works!");
+        await client.subscribe(`#`);
         client.on("message",(topic,buffer)=>{
-            console.log(`${topic}::${buffer.toString()}`);
+            let payload = buffer.toString();
+            console.log(`${topic}::${payload}`);
         })
     } catch (e) {
         // Do something about it!

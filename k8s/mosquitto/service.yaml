@@ -11,5 +11,8 @@ spec:
   - name: mqtt
     port: 1883
     targetPort: 1883
+  - name: mqttws
+    port: 9003
+    targetPort: 9003
   selector:
     app: mqtt

@@ -24,19 +24,20 @@ spec:
               cpu: "0.1"
           ports:
           - containerPort: 1883
-          # volumeMounts:
+          - containerPort: 9003
+          volumeMounts:
             # A configmap for the mosquitto.conf file
-            # - name: mosquitto-conf
-            #   mountPath: /mosquitto/conf/mosquitto.conf
-            #   subPath: mosquitto.conf
+            - name: mosquitto-conf
+              mountPath: /mosquitto/conf/mosquitto.conf
+              subPath: mosquitto.conf
             # A configmap for the mosquitto passwd file
             # - name: mosquitto-passwd
             #   mountPath: /mosquitto/conf/passwd
             #   subPath: passwd
-      # volumes:
-      #   - name: mosquitto-conf
-      #     configMap:
-      #       name: mosquitto.conf
+      volumes:
+        - name: mosquitto-conf
+          configMap:
+            name: mosquitto.conf
         # - name: mosquitto-passwd
         #   configMap:
         #     name: passwd

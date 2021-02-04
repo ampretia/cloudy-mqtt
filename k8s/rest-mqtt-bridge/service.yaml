@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: notifications
+  name: rest-mqtt-bridge
+  labels:
+    app: rest-mqtt-bridge
+spec:
+  type: LoadBalancer
+  ports:
+  - name: rest-mqtt-bridge
+    port: 3000
+    targetPort: 3000
+  selector:
+    app: rest-mqtt-bridge

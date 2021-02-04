@@ -47,4 +47,4 @@ spec:
         - name: payload-file
           value: $(workspaces.workspace.path)/result
         - name: pipeline-debug
-          value: $(params.pipeline-debug)          
+          value: $(params.pipeline-debug)
